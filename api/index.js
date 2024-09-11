@@ -2,10 +2,11 @@ const express = require("express");
 const { Sequelize, DataTypes } = require("sequelize");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const http = require("http");
-const socketIo = require("socket.io");
 const cors = require("cors");
 const moment = require('moment');
+const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,6 +14,7 @@ const io = socketIo(server);
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../public')));
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
@@ -252,15 +254,11 @@ app.get("/api/historical-data", authMiddleware, async (req, res) => {
   }
 });
 
+// Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log("New WebSocket connection");
-
-  socket.on("subscribe", async (machineId) => {
-    socket.join(machineId);
-  });
-
-  socket.on("unsubscribe", (machineId) => {
-    socket.leave(machineId);
+  console.log("New client connected");
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
@@ -313,14 +311,28 @@ async function generateMachineData(specificMachine = null) {
   }
 }
 
-sequelize
-  .sync({ force: true })
-  .then(async () => {
-    const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+// Replace the server listening part with:
+if (process.env.VERCEL) {
+  // Running on Vercel, export the app
+  module.exports = app;
+} else {
+  // Running locally
+  const PORT = process.env.PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
+// Instead, add this for database initialization:
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+    
+    // Initialize your database here (create tables, etc.)
+    await sequelize.sync({ force: true });
+    
+    // Create initial machines
     for (let i = 1; i <= 20; i++) {
       await Machine.create({
         machineId: `M${i.toString().padStart(8, "0")}`,
@@ -329,12 +341,20 @@ sequelize
       });
     }
 
-    setInterval(() => generateMachineData(), TOOL_OFFSET_INTERVAL);
-    setInterval(() => generateMachineData(), FEEDRATE_INTERVAL);
-    setInterval(() => generateMachineData(), TOOL_IN_USE_INTERVAL);
+    console.log("Initial data created successfully");
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+})();
 
-    console.log("Data generators started");
-  })
-  .catch((err) => {
-    console.error("Unable to connect to the database:", err);
-  });
+// Keep the data generation intervals
+setInterval(() => generateMachineData(), TOOL_OFFSET_INTERVAL);
+setInterval(() => generateMachineData(), FEEDRATE_INTERVAL);
+setInterval(() => generateMachineData(), TOOL_IN_USE_INTERVAL);
+
+// Serve the frontend for any other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+module.exports = app;

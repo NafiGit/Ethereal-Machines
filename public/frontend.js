@@ -1,7 +1,7 @@
 // Frontend.js
 
-const API_URL = "http://localhost:3000/api";
-const SOCKET_URL = "http://localhost:3000";
+const API_URL = "/api";
+const SOCKET_URL = window.location.origin;
 
 let currentUser = null;
 let socket = null;
@@ -402,7 +402,7 @@ function initializeSocket() {
   }
 
   socket = io(SOCKET_URL, {
-    auth: { token: localStorage.getItem("token") },
+    path: '/socket.io',
     transports: ["websocket", "polling"],
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,

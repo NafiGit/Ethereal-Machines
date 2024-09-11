@@ -1,6 +1,6 @@
-# Ethereal Machines Backend Developer Assignment
+# Ethereal Machines Dashboard
 
-This project implements a backend system for managing machine data, user authentication, and real-time data streaming as per the requirements specified by Ethereal Machines Pvt Ltd.
+This project implements a full-stack dashboard for managing machine data, user authentication, and real-time data streaming for Ethereal Machines Pvt Ltd.
 
 ## Features
 
@@ -18,15 +18,15 @@ This project implements a backend system for managing machine data, user authent
    ```
    npm install
    ```
-3. Run the server in development mode with Nodemon:
+3. Run the application locally:
    ```
    npm run dev
    ```
-   This will start the server and automatically restart it when file changes are detected.
+   This will start the development server with Nodemon, which includes both the frontend and backend.
 
-   Alternatively, to run the server without Nodemon:
+4. Deploy the application to Vercel:
    ```
-   npm start
+   npm run deploy
    ```
 
 ## API Endpoints
@@ -55,7 +55,7 @@ This project implements a backend system for managing machine data, user authent
 Connect to the WebSocket server to receive real-time machine data updates:
 
 ```javascript
-const socket = io("http://localhost:3000");
+const socket = io(window.location.origin);
 socket.emit("subscribe", "M00000001"); // Subscribe to updates for a specific machine
 ```
 
@@ -141,5 +141,3 @@ If you're experiencing issues with the dashboard:
 1. Automatic Logout: The system now implements a token expiration check. Users will be automatically logged out after 1 hour of inactivity. This helps maintain security while preventing unexpected logouts.
 
 2. Chart Stability: The charts have been optimized for better performance and stability. They now update more smoothly and should remain stable even with frequent data updates.
-
-...
