@@ -138,7 +138,10 @@ async function updateUI() {
   if (isLoggedIn) {
     const machines = await fetchMachines();
     document.getElementById("sidebar-container").innerHTML = createSidebar(machines);
-    updateUIBasedOnRole();
+    // Only call updateUIBasedOnRole when a machine is selected
+    if (currentMachineId) {
+      updateUIBasedOnRole();
+    }
   }
 }
 
@@ -170,6 +173,7 @@ async function selectMachine(machineId, machineName) {
     socket.emit('subscribe', machineId);
     currentMachineId = machineId;
   }
+  updateUIBasedOnRole(); // Call updateUIBasedOnRole here
 }
 
 function updateURL() {
@@ -467,9 +471,24 @@ function updateCharts(newData) {
   }
 }
 
+function updateLatestDataTable(latestData) {
+  const table = document.getElementById("latestDataTable");
+  if (table) {
+    const rows = table.getElementsByTagName('tr');
+    AXES.forEach((axis, index) => {
+      if (rows[index + 1]) {
+        const cells = rows[index + 1].getElementsByTagName('td');
+        cells[1].textContent = latestData.axes[axis].toolOffset.toFixed(2);
+        cells[2].textContent = latestData.axes[axis].feedrate;
+        cells[3].textContent = latestData.axes[axis].toolInUse;
+      }
+    });
+  }
+}
+
 function updateSummary(newData) {
   const summaryTab = document.getElementById('summary-tab');
-  if (summaryTab) {
+  if (summaryTab && summaryTab.style.display !== 'none') {
     summaryTab.innerHTML = createSummary(newData);
   }
 }
@@ -525,26 +544,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Add this function to handle role-based UI updates
+// Update the updateUIBasedOnRole function
 function updateUIBasedOnRole() {
   const role = currentUser.role;
   const editTab = document.querySelector('button[onclick="showTab(\'edit\')"]');
   const deleteTab = document.querySelector('button[onclick="showTab(\'delete\')"]');
   const toolInUseInputs = document.querySelectorAll(".tool-in-use-input");
 
-  if (role === "SUPERADMIN") {
-    editTab.style.display = "inline-block";
-    deleteTab.style.display = "inline-block";
-    toolInUseInputs.forEach(input => input.disabled = false);
-  } else if (role === "MANAGER") {
-    editTab.style.display = "inline-block";
-    deleteTab.style.display = "none";
-    toolInUseInputs.forEach(input => input.disabled = true);
-  } else if (role === "SUPERVISOR" || role === "OPERATOR") {
-    editTab.style.display = "none";
-    deleteTab.style.display = "none";
-    toolInUseInputs.forEach(input => input.disabled = false);
+  if (editTab) {
+    editTab.style.display = (role === "SUPERADMIN" || role === "MANAGER") ? "inline-block" : "none";
   }
+
+  if (deleteTab) {
+    deleteTab.style.display = (role === "SUPERADMIN") ? "inline-block" : "none";
+  }
+
+  toolInUseInputs.forEach(input => {
+    if (input) {
+      input.disabled = (role === "MANAGER");
+    }
+  });
 }
 
 // Update the updateMachine function

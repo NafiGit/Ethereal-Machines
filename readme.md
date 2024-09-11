@@ -90,8 +90,7 @@ The server automatically generates data for machines with 5 axes each. Data is u
    - Edit: Allows updating machine information (for SUPERADMIN and MANAGER roles).
    - Delete: Provides an option to delete the machine (for SUPERADMIN role only).
    - Summary: Displays average values for quick insights.
-6. The data will update in real-time as new information is generated on the server.
-7. Use the "Create Machine" button at the top of the dashboard to add new machines (if you have the required permissions).
+6. The data will update in real-time as new information is generated on the server. The currently opened machine and tab will remain active, with only the displayed data being updated.
 
 ## User Interface
 
