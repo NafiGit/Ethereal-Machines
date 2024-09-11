@@ -19,9 +19,11 @@ This project implements a full-stack dashboard for managing machine data, user a
    npm install
    ```
 3. Run the application locally:
+
    ```
    npm run dev
    ```
+
    This will start the development server with Nodemon, which includes both the frontend and backend.
 
 4. Deploy the application to Vercel:
@@ -78,6 +80,10 @@ The server automatically generates data for machines with 5 axes each. Data is u
 - The server uses SQLite as the database, which is stored in `database.sqlite` in the project root.
 - The database is recreated each time the server starts. For a production environment, remove the `{ force: true }` option from `sequelize.sync()`.
 - Make sure to replace `'your_jwt_secret'` with a secure secret key in a production environment.
+
+## Screenshot
+
+![App Screenshot in Work](AppScreenshot.png)
 
 ## Using the Dashboard
 
