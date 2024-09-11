@@ -16,8 +16,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'sqlite',
+const sequelize = new Sequelize({
+  dialect: "sqlite",
+  storage: process.env.VERCEL ? "/tmp/database.sqlite" : "./database.sqlite",
   logging: false,
 });
 
@@ -115,19 +116,27 @@ const accessControlMiddleware = (allowedRoles) => {
 
 app.post("/api/auth/register", async (req, res) => {
   try {
-    // Your registration logic here
+    const user = await User.create({
+      ...req.body,
+      password: await bcrypt.hash(req.body.password, 8),
+    });
+    const token = jwt.sign({ id: user.id }, "your_jwt_secret");
+    res.status(201).send({ user, token });
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).send({ error: error.message });
+    res.status(400).send(error);
   }
 });
 
 app.post("/api/auth/login", async (req, res) => {
   try {
-    // Your login logic here
+    const user = await User.findOne({ where: { username: req.body.username } });
+    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+      throw new Error("Invalid login credentials");
+    }
+    const token = jwt.sign({ id: user.id }, "your_jwt_secret");
+    res.send({ user, token });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "Login failed", details: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -309,16 +318,9 @@ if (process.env.VERCEL) {
 } else {
   // Running locally
   const PORT = process.env.PORT || 3000;
-
-  sequelize.sync({ force: process.env.NODE_ENV !== 'production' })
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-      });
-    })
-    .catch(err => {
-      console.error('Unable to connect to the database:', err);
-    });
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }
 
 // Instead, add this for database initialization:
