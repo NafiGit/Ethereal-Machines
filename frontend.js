@@ -149,7 +149,9 @@ function createSidebar(machines) {
       <ul>
         ${machines.map(machine => `
           <li>
-            <a href="#" onclick="selectMachine('${machine.machineId}', '${machine.machineName}')">${machine.machineName}</a>
+            <a href="#" class="machine-link" onclick="selectMachine('${machine.machineId}', '${machine.machineName}')">
+              <i class="fas fa-cog"></i> ${machine.machineName}
+            </a>
           </li>
         `).join('')}
       </ul>
@@ -279,13 +281,10 @@ async function displayMachineData(machineId, machineName) {
     machineDataContainer.innerHTML = `
       <h2>${machineName} (${machineId})</h2>
       <div class="tab-container">
-        <button class="tab-button" onclick="showTab('summary')">Summary</button>
         <button class="tab-button active" onclick="showTab('details')">Details</button>
         <button class="tab-button" onclick="showTab('edit')">Edit</button>
         <button class="tab-button" onclick="showTab('delete')">Delete</button>
-      </div>
-      <div id="summary-tab" class="tab-content" style="display: none;">
-        ${createSummary(latestData)}
+        <button class="tab-button" onclick="showTab('summary')">Summary</button>
       </div>
       <div id="details-tab" class="tab-content">
         <div class="data-container">
@@ -311,6 +310,9 @@ async function displayMachineData(machineId, machineName) {
         <h3>Delete Machine</h3>
         <p>Are you sure you want to delete this machine?</p>
         <button onclick="deleteMachine('${machineId}')">Confirm Delete</button>
+      </div>
+      <div id="summary-tab" class="tab-content" style="display: none;">
+        ${createSummary(latestData)}
       </div>
     `;
 

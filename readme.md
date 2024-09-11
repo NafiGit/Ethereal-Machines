@@ -83,28 +83,26 @@ The server automatically generates data for machines with 5 axes each. Data is u
 
 1. Register a new user or log in with existing credentials.
 2. Once logged in, you'll see the main dashboard with a sidebar containing the list of available machines (EMXP1 to EMXP20).
-3. The sidebar shows each machine's name and action buttons (View Data, Update, Delete).
-4. Click on "View Data" for a machine to display its latest data in the main content area.
-5. The data display will show charts for Tool Offset, Feedrate, and Tool in Use for each axis (X, Y, Z, A, C).
-6. Below the charts, a table will show the current values for each axis.
-7. The data will update in real-time as new information is generated on the server.
-8. Use the "Create Machine" button at the top of the dashboard to add new machines (if you have the required permissions).
-9. The "Update" and "Delete" buttons in the sidebar allow you to modify or remove machines (based on your access level).
+3. The sidebar shows each machine's name with an icon for easy identification.
+4. Click on a machine name in the sidebar to display its latest data in the main content area.
+5. The data display is organized into tabs:
+   - Details (default): Shows charts for Tool Offset, Feedrate, and Tool in Use for each axis (X, Y, Z, A, C), and a table with current values.
+   - Edit: Allows updating machine information (for SUPERADMIN and MANAGER roles).
+   - Delete: Provides an option to delete the machine (for SUPERADMIN role only).
+   - Summary: Displays average values for quick insights.
+6. The data will update in real-time as new information is generated on the server.
+7. Use the "Create Machine" button at the top of the dashboard to add new machines (if you have the required permissions).
 
 ## User Interface
 
 The dashboard now features a more organized and visually appealing layout based on Swiss design principles:
 
 - Clean and minimalist design with a focus on typography and whitespace
-- A navigation bar at the top displays the dashboard title and logout button when logged in
+- A navigation bar at the top displays the dashboard title (now visible) and logout button when logged in
 - The main content area is divided into two sections:
-  1. A sidebar on the left showing the list of machine names
+  1. A sidebar on the left showing the list of machine names with icons
   2. The main dashboard area on the right, displaying machine data and charts
-- Machine details are now organized into tabs:
-  - Summary: Displays average values for quick insights
-  - Details: Shows charts and latest data table
-  - Edit: Allows updating machine information (for SUPERADMIN and MANAGER roles)
-  - Delete: Provides an option to delete the machine (for SUPERADMIN role only)
+- Machine details are organized into tabs: Details, Edit, Delete, and Summary
 - Login and registration forms are shown in the center of the screen when not logged in
 - Improved color scheme for better readability and visual hierarchy
 - Responsive layout that takes up the full viewport width (100vw)
