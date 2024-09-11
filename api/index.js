@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "./database.sqlite",
+  storage: process.env.VERCEL ? "/tmp/database.sqlite" : "./database.sqlite",
   logging: false,
 });
 
